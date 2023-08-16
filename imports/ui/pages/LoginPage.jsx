@@ -26,14 +26,14 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 export default function LoginPage() {
   const navigate = useNavigate();
   const inputRef = useRef(null);
-  
+
   const [username, setUsername] = useState('');
   const [userError, setUserError] = useState(false);
   const [password, setPassword] = useState('');
 
   const [isSignup, setIsSignup] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-
+  const [alertMessage, setAlertMessage] = useState('');
 
   // const submit = e => {
   //   e.preventDefault();
@@ -58,25 +58,31 @@ export default function LoginPage() {
     e.preventDefault();
     if (isSignup) {
       Accounts.createUser({ username, password }, error => {
-        if (error){
+        if (error) {
           setUserError(true);
+          if (error.reason === "Username already exists.") {
+            setAlertMessage("Usuário já existe")
+            console.log(alertMessage)
+            setOpenSnackbar(true)
+          }
           console.log("Erro no cadastro", error)
           handleFocus()
         }
         else {
+          setAlertMessage("Cadastro realizado com sucesso")
           setOpenSnackbar(true)
-          setIsSignup(false)
+          navigate('/home');
         }
       });
     } else {
       Meteor.loginWithPassword(username, password, error => {
-        if (error){
+        if (error) {
           setUserError(true);
           console.log("Erro no login", error)
           handleFocus()
         }
-        else{
-          navigate('/tasks');
+        else {
+          navigate('/home');
         }
       });
     }
@@ -136,7 +142,6 @@ export default function LoginPage() {
               label="Remember me"
             /> */}
           <Button
-          onClick={handleFocus}
             type="submit"
             fullWidth
             size="large"
@@ -158,6 +163,7 @@ export default function LoginPage() {
             sx={{ mt: 1, mb: 2 }}
             onClick={() => {
               setIsSignup(!isSignup);
+              handleFocus()
             }}
           >
             {isSignup ? "Tenho uma conta" : "Criar uma conta"}
@@ -170,8 +176,8 @@ export default function LoginPage() {
         onClose={handleClose}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert onClose={handleClose}
-          severity="success" sx={{ width: '100%' }}>
-          Cadastro realizado com sucesso
+          severity={alertMessage==="Usuário já existe" ? "error" : "success"} sx={{ width: '100%' }}>
+          {alertMessage}
         </Alert>
       </Snackbar>
     </Container>

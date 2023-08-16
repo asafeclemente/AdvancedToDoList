@@ -4,11 +4,13 @@ import { Layout } from './components/Layout';
 import { Button } from '@material-ui/core';
 
 import LoginPage from './pages/LoginPage'
+import Home from './pages/Home';
 
 export const routes = {
   root: '/',
   notFound: '*',
-  tasks: '/tasks',
+  home: '/home',
+  tasks: '/tasks'
 };
 
 // const NotFoundPage = React.lazy(() =>
@@ -22,11 +24,18 @@ export function Routes() {
       <ReactRoutes>
         <Route
           element={
-            <Layout loggedOnly={false}>
-              <LoginPage />
-            </Layout>
+            <LoginPage />
           }
           index
+        />
+        <Route
+          element={
+            <Layout>
+              <Home/>
+              {/* <Button variant="contained">essa vai ser a home</Button> */}
+            </Layout>
+          }
+          path={routes.home}
         />
         <Route
           element={
