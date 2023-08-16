@@ -6,3 +6,5 @@ TODO
 confirmação de sair
 esqueci minha senha
 refatorar layout
+SimpleSchema
+callAsync

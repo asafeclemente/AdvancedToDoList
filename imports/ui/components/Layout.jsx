@@ -1,8 +1,8 @@
 import React from 'react';
 import Box from '@mui/material/Box';
+import Link from '@mui/material/Link';
 import { Navigate } from 'react-router-dom';
 import Toolbar from '@mui/material/Toolbar';
-import { CssBaseline, Tooltip } from '@mui/material';
 import MuiAppBar from '@mui/material/AppBar';
 import { useNavigate } from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import green from '@material-ui/core/colors/green';
 import purple from '@material-ui/core/colors/purple';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import { Container, CssBaseline, Tooltip } from '@mui/material';
 import { useUser, useUserId } from 'meteor/react-meteor-accounts';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -36,14 +37,28 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-export function Layout({ loggedOnly = true, children }) {
-	const navigate = useNavigate();
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      <Link color="inherit" href="https://mui.com/">
+        Asafe Medeiros
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
-	const logout = () => {
-		Meteor.logout(() => {
-			navigate('/');
-		});
-	};
+
+export function Layout({ loggedOnly = true, children }) {
+  const navigate = useNavigate();
+
+  const logout = () => {
+    Meteor.logout(() => {
+      navigate('/');
+    });
+  };
 
   const userId = useUserId();
   const username = useUser()?.username;
@@ -100,16 +115,33 @@ export function Layout({ loggedOnly = true, children }) {
               {username}
             </Typography>
             <Tooltip title="Deslogar">
-            <IconButton color="inherit"
-              onClick={() => logout()}
-            >
-              <ExitToAppIcon />
-            </IconButton>
+              <IconButton color="inherit"
+                onClick={() => logout()}
+              >
+                <ExitToAppIcon />
+              </IconButton>
             </Tooltip>
           </Toolbar>
         </AppBar>
         <Drawer open={open} drawerWidth={drawerWidth} toggleDrawer={toggleDrawer} />
-        {children}
+        <Box
+          component="main"
+          sx={{
+            backgroundColor: (theme) =>
+              theme.palette.mode === 'light'
+                ? theme.palette.grey[100]
+                : theme.palette.grey[900],
+            flexGrow: 1,
+            height: '100vh',
+            overflow: 'auto',
+          }}
+        >
+          <Toolbar />
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            {children}
+            <Copyright sx={{ pt: 4 }} />
+          </Container>
+        </Box>
       </Box>
     </ThemeProvider>
 

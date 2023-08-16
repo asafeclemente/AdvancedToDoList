@@ -1,10 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes as ReactRoutes } from 'react-router-dom';
-import { Layout } from './components/Layout';
 import { Button } from '@material-ui/core';
+import { Layout } from './components/Layout';
+import { BrowserRouter, Route, Routes as ReactRoutes } from 'react-router-dom';
 
-import LoginPage from './pages/LoginPage'
 import Home from './pages/Home';
+import LoginPage from './pages/LoginPage'
+import TasksList from './pages/tasksList/TasksList';
 
 export const routes = {
   root: '/',
@@ -16,7 +17,6 @@ export const routes = {
 // const NotFoundPage = React.lazy(() =>
 //   import('./pages/not-found/not-found-page')
 // );
-// const TasksPage = React.lazy(() => import('./pages/tasks/tasks-page'));
 
 export function Routes() {
   return (
@@ -40,8 +40,7 @@ export function Routes() {
         <Route
           element={
             <Layout>
-              {/* <TasksPage /> */}
-              <Button variant="contained">tasks</Button>
+              <TasksList />
             </Layout>
           }
           path={routes.tasks}
