@@ -6,6 +6,8 @@ import { BrowserRouter, Route, Routes as ReactRoutes } from 'react-router-dom';
 import Home from './pages/Home';
 import LoginPage from './pages/LoginPage'
 import TasksList from './pages/tasksList/TasksList';
+import TaskDetails from './pages/taskDetails/TaskDetails';
+
 
 export const routes = {
   root: '/',
@@ -31,7 +33,7 @@ export function Routes() {
         <Route
           element={
             <Layout>
-              <Home/>
+              <Home />
               {/* <Button variant="contained">essa vai ser a home</Button> */}
             </Layout>
           }
@@ -53,6 +55,14 @@ export function Routes() {
             </Layout>
           }
           path={routes.notFound}
+        />
+        <Route
+          element={
+            <Layout>
+              <TaskDetails />
+            </Layout>
+          }
+          path={`${routes.tasks}/:taskId`} // Define the route with a parameter
         />
       </ReactRoutes>
     </BrowserRouter>
