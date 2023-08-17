@@ -40,6 +40,8 @@ export default function TasksList() {
     setHoveredIndex(null);
   };
 
+  console.log(tasks)
+
   return (
     <Box
       sx={{
@@ -66,14 +68,14 @@ export default function TasksList() {
                 <TaskAltIcon />
               </ListItemIcon>
               <ListItemText
-                primary={task.text + " " + task._id}
+                primary={task.name + " " + task._id}
                 secondary={`Criado por: ${task.username}  (${format(
                   task.createdAt,
                   'HH:mm - dd/MM/yyyy'
                 )})`}
               />
               {/* Renderize o componente LongMenu condicionalmente */}
-              {hoveredIndex === index && <LongMenu />}
+              {task.userId === user._id && hoveredIndex === index && <LongMenu task = {task}/>}
             </ListItem>
             {index !== tasks.length - 1 && <Divider />}
           </React.Fragment>

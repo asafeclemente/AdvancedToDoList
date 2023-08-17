@@ -1,40 +1,46 @@
 import * as React from 'react';
-import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+import { useTracker } from 'meteor/react-meteor-data';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useNavigate } from 'react-router-dom';
 
 const options = [
-  'None',
-  'Atria',
-  'Callisto',
-  'Dione',
-  'Ganymede',
-  'Hangouts Call',
-  'Luna',
-  'Oberon',
-  'Phobos',
-  'Pyxis',
-  'Sedna',
-  'Titania',
-  'Triton',
-  'Umbriel',
+  'Editar',
+  'Remover',
 ];
 
 const ITEM_HEIGHT = 48;
 
-export default function LongMenu() {
+export default function LongMenu({task}) {
+  const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
+  const deleteTask = ({ _id }) => Meteor.call('tasks.remove', _id);
+
   const handleClose = () => {
     setAnchorEl(null);
   };
 
+  const handleOption = (option) => {
+    if (option === "Editar"){
+      navigate('/tasks/' + task._id);
+    }
+
+    else if (option === "Remover"){
+      deleteTask(task)
+    }
+    setAnchorEl(null);
+  };
+
   return (
-    <div>
+    <>
       <IconButton
         aria-label="more"
         id="long-button"
@@ -61,11 +67,11 @@ export default function LongMenu() {
         }}
       >
         {options.map((option) => (
-          <MenuItem key={option} selected={option === 'Pyxis'} onClick={handleClose}>
+          <MenuItem key={option} onClick={() => handleOption(option)}>
             {option}
           </MenuItem>
         ))}
       </Menu>
-    </div>
+    </>
   );
 }

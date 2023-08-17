@@ -1,12 +1,28 @@
 import * as React from 'react';
+import { format } from 'date-fns';
+import Paper from '@mui/material/Paper';
 import { useParams } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
 import { TaskAltIcon } from '@mui/icons-material';
 import { useTracker } from 'meteor/react-meteor-data';
 import { TasksCollection } from '/imports/db/TasksCollection';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, Grid, TextField, Typography } from '@mui/material';
+import StatusTabs from './components/StatusTabs';
+
+const Item = styled(Paper)(({ theme }) => ({
+	backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+	...theme.typography.body2,
+	padding: theme.spacing(1),
+	textAlign: 'center',
+	color: theme.palette.text.secondary,
+}));
+
+const tabValues = { 0: "Cadastrada", 1: "Em andamento", 2: "Concluida" }
 
 export default function TaskDetails() {
 	const { taskId } = useParams();
+
+	const [tabValue, setTabValue] = React.useState(0);
 
 	const { task, isLoading } = useTracker(() => {
 		const noDataAvailable = { task: [] };
@@ -20,6 +36,8 @@ export default function TaskDetails() {
 		}
 
 		const task = TasksCollection.find({ _id: taskId }).fetch()[0];
+		// setTabValue(foundKey)
+
 		return { task: task };
 	});
 
@@ -31,7 +49,6 @@ export default function TaskDetails() {
 
 	const [isEditing, setIsEditing] = React.useState(false);
 	const [editedTask, setEditedTask] = React.useState({ ...task });
-	console.log(editedTask)
 
 	const handleEditClick = () => {
 		setIsEditing(true);
@@ -40,6 +57,7 @@ export default function TaskDetails() {
 	const handleCancelClick = () => {
 		setEditedTask({ ...task });
 		setIsEditing(false);
+		setTabValue(task.status)
 		onCancel();
 	};
 
@@ -59,56 +77,86 @@ export default function TaskDetails() {
 	};
 
 	return (
-		<Box>
-			{/* <TaskAltIcon /> */}
-			{isEditing ? (
-				<TextField
-					label="Nome"
-					value={editedTask.text}
-					onChange={(e) => handleInputChange('text', e.target.value)}
-				/>
-			) : (
-				<Typography variant="h5">{editedTask.text}</Typography>
-			)}
+		!isLoading ?
+			<Box
+				sx={{
+					bgcolor: 'background.paper',
+					position: 'relative',
+					minHeight: 200,
+					padding: 2
+				}}
+			>
 
-			{isEditing ? (
 				<TextField
-					label="Situação"
-					value={editedTask.status}
-					onChange={(e) => handleInputChange('status', e.target.value)}
+					sx={{
+						mb: 2,
+					}}
+					margin="normal"
+					fullWidth
+					id="taskName"
+					label="Nome da tarefa"
+					name="taskName"
+					autoComplete="taskName"
+					autoFocus
+					disabled={!isEditing}
+					defaultValue={task.name}
+					onChange={(e) => handleInputChange('name', e.target.value)}
 				/>
-			) : (
-				<Typography>{editedTask.status}</Typography>
-			)}
-
-			{isEditing ? (
 				<TextField
+					sx={{
+						mb: 2,
+					}}
+					id="taskDescription"
+					fullWidth
+					label="Descrição"
+					defaultValue={task.description}
+					onChange={(e) => handleInputChange('description', e.target.value)}
+					disabled={!isEditing}
+				/>
+				<TextField
+					sx={{
+						mb: 2,
+					}}
 					label="Data"
 					value={editedTask.date}
-					onChange={(e) => handleInputChange('date', e.target.value)}
+					defaultValue={format(
+						task.createdAt,
+						'HH:mm - dd/MM/yyyy'
+					)}
+					disabled
 				/>
-			) : (
-				<Typography>{editedTask.date}</Typography>
-			)}
 
-			<Button onClick={() => handleStatusChange('Em Andamento')} disabled={editedTask.status === 'Em Andamento' || isEditing}>
-				Mover para Em Andamento
-			</Button>
-			<Button onClick={() => handleStatusChange('Concluída')} disabled={editedTask.status === 'Concluída' || isEditing}>
-				Mover para Concluída
-			</Button>
-			<Button onClick={() => handleStatusChange('Cadastrada')} disabled={editedTask.status === 'Cadastrada' || isEditing}>
-				Mover para Cadastrada
-			</Button>
+				{/* TODO isLoading again?*/}
+				{!isLoading &&
+					<StatusTabs
+						tab={isEditing ? tabValue : task.status}
+						onChange={(value) => setTabValue(value)}
+						isEditing={isEditing} />
+				}
+				<Box sx={{ mt: 2, flexGrow: 1 }}>
+					<Grid container spacing={2}>
+						{isEditing ? (
+							<>
+								<Grid item xs={6}>
+									<Item><Button fullWidth
+										onClick={handleCancelClick}>Cancelar</Button></Item>
+								</Grid>
+								<Grid item xs={6}>
+									<Item><Button fullWidth
+										onClick={handleSaveClick}>Salvar</Button></Item>
+								</Grid>
+							</>
+						) : (
+							<Grid item xs={12}>
+								<Item><Button fullWidth
+									onClick={handleEditClick}>Editar</Button></Item>
+							</Grid>
+						)}
 
-			{isEditing ? (
-				<div>
-					<Button onClick={handleSaveClick}>Salvar</Button>
-					<Button onClick={handleCancelClick}>Cancelar</Button>
-				</div>
-			) : (
-				<Button onClick={handleEditClick}>Editar</Button>
-			)}
-		</Box>
+					</Grid>
+				</Box>
+			</Box>
+			:
+			<>Carregando</>
 	);
 }

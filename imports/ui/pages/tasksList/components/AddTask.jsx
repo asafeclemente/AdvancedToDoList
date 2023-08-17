@@ -33,7 +33,9 @@ export default function AddTask() {
   }
 
   const [taskName, setTaskName] = React.useState("");
+  const [taskDescription, setTaskDescription] = React.useState("");
   const [taskError, setTaskError] = React.useState(false);
+
 
   const [open, setOpen] = React.useState(false);
 
@@ -45,12 +47,11 @@ export default function AddTask() {
 
     if (!taskName) return;
 
-    Meteor.call('tasks.insert', taskName, function (error, result) {
+    Meteor.call('tasks.insert', taskName, taskDescription, function (error, result) {
       if (error) {
         alert("Erro");
-      } else {
-        console.log(result)
-      }
+      } 
+      // TODO result não retorna nada
     });
 
     setTaskName('');
@@ -90,6 +91,20 @@ export default function AddTask() {
               autoFocus
               onChange={(e) => {
                 setTaskName(e.target.value);
+              }}
+            />
+            <TextField
+              margin="normal"
+              variant="standard"
+              fullWidth
+              id="taskDescription"
+              error={taskError}
+              value={taskDescription}
+              label="Descrição da tarefa"
+              name="taskDescription"
+              autoComplete="taskDescription"
+              onChange={(e) => {
+                setTaskDescription(e.target.value);
               }}
             />
             {/* <Button
