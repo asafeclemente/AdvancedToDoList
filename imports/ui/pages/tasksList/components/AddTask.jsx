@@ -3,10 +3,11 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
-import { Fab, TextField } from '@mui/material';
+import { Fab, Grid, TextField } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
+import PrivateToggle from './PrivateToggle';
 
 const fabStyle = {
   position: 'absolute',
@@ -19,7 +20,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 600,
+  width: 500,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
@@ -36,26 +37,28 @@ export default function AddTask() {
   const [taskDescription, setTaskDescription] = React.useState("");
   const [taskError, setTaskError] = React.useState(false);
 
+  const [privateTask, setPrivateTask] = React.useState(true);
 
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setTaskName('');
+    setTaskDescription('');
+    setPrivateTask(true)
+    setOpen(false)};
 
   const handleSubmit = e => {
     e.preventDefault();
 
     if (!taskName) return;
 
-    Meteor.call('tasks.insert', taskName, taskDescription, function (error, result) {
+    Meteor.call('tasks.insert', taskName, taskDescription, privateTask, function (error, result) {
       if (error) {
         alert("Erro");
       }
       // TODO result não retorna nada
     });
-
-    setTaskName('');
-    setTaskDescription('');
     handleClose()
     setLoading(false);
 
@@ -73,12 +76,17 @@ export default function AddTask() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Adicionar nova tarefa
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Ela será visível a todos os usuários.
-          </Typography>
+
+          <Box >
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Adicionar nova tarefa
+            </Typography>
+            <PrivateToggle
+              checked={privateTask}
+              onChange={(checked) => setPrivateTask(checked)}>
+            </PrivateToggle>
+          </Box>
+
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -111,16 +119,6 @@ export default function AddTask() {
                 setTaskDescription(e.target.value);
               }}
             />
-            {/* <Button
-              type="submit"
-              fullWidth
-              size="large"
-              variant="contained"
-              sx={{ mt: 2, mb: 1 }}
-              color={"primary"}
-            >
-              {"Adicionar"}
-            </Button> */}
 
             <LoadingButton
               disabled={taskName !== "" ? false : true}

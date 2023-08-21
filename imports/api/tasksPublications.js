@@ -34,8 +34,12 @@ Meteor.publish('tasks', function () {
 // }
 
 Meteor.publish('allTasks', function () {
-
-  let tasks = TasksCollection.find({} , {
+  let tasks = TasksCollection.find({
+    $or: [
+      { privateTask: { $ne: true } },   // Tarefas não privadas (private não igual a 1)
+      { userId: this.userId }    // Tarefas do usuário atual
+    ]
+  }, {
     fields: {
       _id: 1,
       createdAt: 1,
@@ -43,9 +47,10 @@ Meteor.publish('allTasks', function () {
       userId: 1,
       status: 1,
       name: 1,
-      description: 1
+      description: 1,
+      privateTask: 1
     },
   });
 
-  return tasks
+  return tasks;
 });
