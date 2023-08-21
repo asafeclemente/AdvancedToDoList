@@ -1,10 +1,18 @@
 import React from 'react';
-import { styled } from '@mui/material/styles';
+import { Typography } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
+import { styled } from '@mui/material/styles';
+import PeopleIcon from '@mui/icons-material/People';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import ListItemButton from '@mui/material/ListItemButton';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Divider, IconButton, List, Toolbar } from '@mui/material';
-import { mainListItems, secondaryListItems } from './components/ListItens';
-
+import { useUser, useUserId } from 'meteor/react-meteor-accounts';
+import { useNavigate } from 'react-router-dom';
 
 export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 	const Drawerr = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -33,6 +41,10 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 		}),
 	);
 
+	const username = useUser()?.username;
+
+	const navigate = useNavigate();
+
 	return (
 		<>
 			<Drawerr variant="permanent" open={open}>
@@ -50,9 +62,31 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 				</Toolbar>
 				<Divider />
 				<List component="nav">
-					{mainListItems}
+						<Typography id="drawer-user-email" variant="caption" ml={2}>
+							asafecgm1@gmail.comaaasdfghjk
+						</Typography>
+						<ListSubheader component="div" inset>
+
+						</ListSubheader>
+						<ListItemButton>
+							<ListItemIcon>
+								<AssignmentIcon />
+							</ListItemIcon>
+							<ListItemText primary={username} />
+						</ListItemButton>
 					<Divider sx={{ my: 1 }} />
-					{secondaryListItems}
+						<ListItemButton>
+							<ListItemIcon>
+								<DashboardIcon />
+							</ListItemIcon>
+							<ListItemText primary="Home" />
+						</ListItemButton>
+						<ListItemButton onClick={() => navigate('/perfil')}>
+							<ListItemIcon>
+								<PeopleIcon />
+							</ListItemIcon>
+							<ListItemText primary="Perfil" />
+						</ListItemButton>
 				</List>
 			</Drawerr>
 		</>

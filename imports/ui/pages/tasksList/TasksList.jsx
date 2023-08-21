@@ -8,6 +8,9 @@ import { TasksCollection } from '/imports/db/TasksCollection';
 import { Divider, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import LongMenu from './components/LongMenu';
 
+const tabValues = { 0: "Cadastrada", 1: "Em andamento", 2: "Concluida" }
+
+
 export default function TasksList() {
   const user = useTracker(() => Meteor.user());
 
@@ -41,45 +44,47 @@ export default function TasksList() {
   };
 
   return (
-    <Box
-      sx={{
-        bgcolor: 'background.paper',
-        position: 'relative',
-        minHeight: 200,
-      }}
-    >
-      <List sx={{ pt: 0, pb: 0 }}>
-        {tasks.map((task, index) => (
-          <React.Fragment key={index}>
-            <ListItem
-              key={index}
-              onMouseEnter={() => handleItemHover(index)}
-              onMouseLeave={handleItemLeave}
-              onClick={() => handleItemHover(index)} // Enable on mobile click
-              sx={{
-                '&:hover': {
-                  backgroundColor: '#f0f0f0',
-                },
-              }}
-            >
-              <ListItemIcon>
-                <TaskAltIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary={task.name}
-                secondary={`Criado por: ${task.username}  (${format(
-                  task.createdAt,
-                  'HH:mm - dd/MM/yyyy'
-                )})`}
-              />
-              {/* Renderize o componente LongMenu condicionalmente */}
-              {task.userId === user._id && hoveredIndex === index && <LongMenu task = {task}/>}
-            </ListItem>
-            {index !== tasks.length - 1 && <Divider />}
-          </React.Fragment>
-        ))}
-      </List>
+    <>
+      <Box
+        sx={{
+          bgcolor: 'background.paper',
+          position: 'relative',
+          minHeight: 200,
+        }}
+      >
+        <List sx={{ pt: 0, pb: 0 }}>
+          {tasks.map((task, index) => (
+            <React.Fragment key={index}>
+              <ListItem
+                key={index}
+                onMouseEnter={() => handleItemHover(index)}
+                onMouseLeave={handleItemLeave}
+                onClick={() => handleItemHover(index)} // Enable on mobile click
+                sx={{
+                  '&:hover': {
+                    backgroundColor: '#f0f0f0',
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <TaskAltIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={task.name + " | " + tabValues[task.status]}
+                  secondary={`Criado por: ${task.username}  (${format(
+                    task.createdAt,
+                    'HH:mm - dd/MM/yyyy'
+                  )})`}
+                />
+                {/* Renderize o componente LongMenu condicionalmente */}
+                {task.userId === user._id && hoveredIndex === index && <LongMenu task={task} />}
+              </ListItem>
+              {index !== tasks.length - 1 && <Divider />}
+            </React.Fragment>
+          ))}
+        </List>
+      </Box>
       <AddTask />
-    </Box>
+    </>
   );
 }

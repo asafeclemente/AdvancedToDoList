@@ -49,7 +49,6 @@ Meteor.methods({
     check(description, String);
     check(status, Number);
 
-
     if (!this.userId) {
       throw new Meteor.Error('Not authorized.');
     }

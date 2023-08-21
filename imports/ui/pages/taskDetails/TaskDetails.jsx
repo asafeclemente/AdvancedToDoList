@@ -163,7 +163,7 @@ export default function TaskDetails() {
 								<>
 									<Grid item xs={6}>
 										<Item><Button fullWidth
-											onClick={() => navigate('/tasks')}>Voltar</Button></Item>
+											onClick={() => navigate(-1)}>Voltar</Button></Item>
 									</Grid>
 									<Grid item xs={6}>
 										<Item><Button fullWidth

@@ -7,11 +7,13 @@ import Home from './pages/Home';
 import LoginPage from './pages/LoginPage'
 import TasksList from './pages/tasksList/TasksList';
 import TaskDetails from './pages/taskDetails/TaskDetails';
+import User from './pages/User';
 
 
 export const routes = {
   root: '/',
   notFound: '*',
+  user: '/perfil',
   home: '/home',
   tasks: '/tasks'
 };
@@ -46,6 +48,14 @@ export function Routes() {
             </Layout>
           }
           path={routes.tasks}
+        />
+        <Route
+          element={
+            <Layout>
+              <User />
+            </Layout>
+          }
+          path={routes.user}
         />
         <Route
           element={

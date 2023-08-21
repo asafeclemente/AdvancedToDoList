@@ -112,7 +112,7 @@ export function Layout({ loggedOnly = true, children }) {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              {username}
+              AdvancedTodoList - {username}
             </Typography>
             <Tooltip title="Deslogar">
               <IconButton color="inherit"
