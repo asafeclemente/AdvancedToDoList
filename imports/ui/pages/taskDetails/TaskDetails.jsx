@@ -1,13 +1,12 @@
 import * as React from 'react';
-import { format } from 'date-fns';
 import Paper from '@mui/material/Paper';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
-import { TaskAltIcon } from '@mui/icons-material';
 import { useTracker } from 'meteor/react-meteor-data';
 import { TasksCollection } from '/imports/db/TasksCollection';
-import { Box, Button, Grid, TextField, Typography } from '@mui/material';
+import { Box, Button, Grid, TextField } from '@mui/material';
 import StatusTabs from './components/StatusTabs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const Item = styled(Paper)(({ theme }) => ({
 	backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -17,12 +16,11 @@ const Item = styled(Paper)(({ theme }) => ({
 	color: theme.palette.text.secondary,
 }));
 
-const tabValues = { 0: "Cadastrada", 1: "Em andamento", 2: "Concluida" }
-
 export default function TaskDetails() {
-	const { taskId } = useParams();
 
-	const [tabValue, setTabValue] = React.useState(0);
+	const navigate = useNavigate();
+
+	const { taskId } = useParams();
 
 	const { task, isLoading } = useTracker(() => {
 		const noDataAvailable = { task: [] };
@@ -36,127 +34,150 @@ export default function TaskDetails() {
 		}
 
 		const task = TasksCollection.find({ _id: taskId }).fetch()[0];
-		// setTabValue(foundKey)
 
-		return { task: task };
+		return { task: task, isLoading: false };
 	});
 
-	const onSave = () => {
-	};
+	React.useEffect(() => {
+		if (task && Object.keys(editedTask).length === 0) {
+			setEditedTask({ ...task });
+			setTabValue(task.status)
+		}
+	}, [task?.name]);
+
+	const [tabValue, setTabValue] = React.useState(task?.status);
+	const [isEditing, setIsEditing] = React.useState(false);
+	const [editedTask, setEditedTask] = React.useState({ ...task });
 
 	const onCancel = () => {
 	};
 
-	const [isEditing, setIsEditing] = React.useState(false);
-	const [editedTask, setEditedTask] = React.useState({ ...task });
-
 	const handleEditClick = () => {
+		setEditedTask(task);
 		setIsEditing(true);
 	};
 
 	const handleCancelClick = () => {
-		setEditedTask({ ...task });
+		setEditedTask(task);
 		setIsEditing(false);
-		setTabValue(task.status)
 		onCancel();
 	};
 
 	const handleSaveClick = () => {
-		onSave(editedTask);
+		const updatedObj = { ...task, ...editedTask };
+		onSave(updatedObj);
 		setIsEditing(false);
+	};
+
+	const onSave = (updatedObj) => {
+		Meteor.call('tasks.update', taskId, updatedObj['name'], updatedObj['description'], updatedObj['status']
+		);
 	};
 
 	const handleInputChange = (field, value) => {
 		setEditedTask((prevState) => ({ ...prevState, [field]: value }));
 	};
 
+
+	const onSaveStatus = (newStatus) => {
+		Meteor.call('tasks.updateStatus', taskId, newStatus
+		);
+	};
+
 	const handleStatusChange = (newStatus) => {
-		if (newStatus !== editedTask.status) {
-			handleInputChange('status', newStatus);
-		}
+		setTabValue(newStatus);
+		handleInputChange('status', newStatus);
+		onSaveStatus(newStatus)
 	};
 
 	return (
+
 		!isLoading ?
-			<Box
-				sx={{
-					bgcolor: 'background.paper',
-					position: 'relative',
-					minHeight: 200,
-					padding: 2
-				}}
-			>
-
-				<TextField
+			Object.keys(editedTask).length ?
+				<Box
 					sx={{
-						mb: 2,
+						bgcolor: 'background.paper',
+						position: 'relative',
+						minHeight: 200,
+						padding: 2
 					}}
-					margin="normal"
-					fullWidth
-					id="taskName"
-					label="Nome da tarefa"
-					name="taskName"
-					autoComplete="taskName"
-					autoFocus
-					disabled={!isEditing}
-					defaultValue={task.name}
-					onChange={(e) => handleInputChange('name', e.target.value)}
-				/>
-				<TextField
-					sx={{
-						mb: 2,
-					}}
-					id="taskDescription"
-					fullWidth
-					label="Descrição"
-					defaultValue={task.description}
-					onChange={(e) => handleInputChange('description', e.target.value)}
-					disabled={!isEditing}
-				/>
-				<TextField
-					sx={{
-						mb: 2,
-					}}
-					label="Data"
-					value={editedTask.date}
-					defaultValue={format(
-						task.createdAt,
-						'HH:mm - dd/MM/yyyy'
-					)}
-					disabled
-				/>
-
-				{/* TODO isLoading again?*/}
-				{!isLoading &&
+				>
 					<StatusTabs
-						tab={isEditing ? tabValue : task.status}
-						onChange={(value) => setTabValue(value)}
-						isEditing={isEditing} />
-				}
-				<Box sx={{ mt: 2, flexGrow: 1 }}>
-					<Grid container spacing={2}>
-						{isEditing ? (
-							<>
-								<Grid item xs={6}>
-									<Item><Button fullWidth
-										onClick={handleCancelClick}>Cancelar</Button></Item>
-								</Grid>
-								<Grid item xs={6}>
-									<Item><Button fullWidth
-										onClick={handleSaveClick}>Salvar</Button></Item>
-								</Grid>
-							</>
-						) : (
-							<Grid item xs={12}>
-								<Item><Button fullWidth
-									onClick={handleEditClick}>Editar</Button></Item>
-							</Grid>
-						)}
-
+						tab={tabValue}
+						onChange={(value) => handleStatusChange(value)} />
+					<Grid container spacing={2}
+						sx={{
+							mt: 3,
+							mb: 3,
+						}}>
+						<Grid item xs={12} sm={6}>
+							<TextField
+								id="taskName"
+								label="Nome da tarefa"
+								name="taskName"
+								disabled={!isEditing}
+								value={editedTask.name}
+								onChange={(e) => handleInputChange('name', e.target.value)}
+							/>
+						</Grid>
+						<Grid item xs={6}>
+							<DatePicker
+								disabled
+								margin="normal"
+								label="Data"
+								value={editedTask.createdAt}
+							/>
+						</Grid>
 					</Grid>
+					<TextField
+						sx={{
+							mb: 2,
+						}}
+						id="taskDescription"
+						fullWidth
+						label="Descrição"
+						multiline
+						rows={4}
+						value={editedTask.description}
+						onChange={(e) => handleInputChange('description', e.target.value)}
+						disabled={!isEditing}
+					/>
+					<Box sx={{ mb: 1, flexGrow: 1 }}>
+						<Grid container spacing={2}>
+							{isEditing ? (
+								<>
+									<Grid item xs={6}>
+										<Item><Button fullWidth
+											onClick={handleCancelClick}>Cancelar</Button></Item>
+									</Grid>
+									<Grid item xs={6}>
+										<Item><Button fullWidth
+											disabled={
+												editedTask.name === task.name &&
+												editedTask.description === task.description
+											}
+											onClick={handleSaveClick}>Salvar</Button></Item>
+									</Grid>
+								</>
+							) : (
+								<>
+									<Grid item xs={6}>
+										<Item><Button fullWidth
+											onClick={() => navigate('/tasks')}>Voltar</Button></Item>
+									</Grid>
+									<Grid item xs={6}>
+										<Item><Button fullWidth
+											onClick={handleEditClick}>Editar</Button></Item>
+									</Grid>
+								</>
+							)}
+
+						</Grid>
+					</Box>
+
 				</Box>
-			</Box>
+				: "Tarefa não encontrada"
 			:
-			<>Carregando</>
+			<>Carregando...</>
 	);
 }

@@ -21,7 +21,7 @@ export default function TasksList() {
     if (!Meteor.user()) {
       return noDataAvailable;
     }
-    const handler = Meteor.subscribe('tasks');
+    const handler = Meteor.subscribe('allTasks');
 
     if (!handler.ready()) {
       return { ...noDataAvailable, isLoading: true };
@@ -39,8 +39,6 @@ export default function TasksList() {
   const handleItemLeave = () => {
     setHoveredIndex(null);
   };
-
-  console.log(tasks)
 
   return (
     <Box
@@ -68,7 +66,7 @@ export default function TasksList() {
                 <TaskAltIcon />
               </ListItemIcon>
               <ListItemText
-                primary={task.name + " " + task._id}
+                primary={task.name}
                 secondary={`Criado por: ${task.username}  (${format(
                   task.createdAt,
                   'HH:mm - dd/MM/yyyy'

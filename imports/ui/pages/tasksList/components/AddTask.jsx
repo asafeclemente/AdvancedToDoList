@@ -50,11 +50,13 @@ export default function AddTask() {
     Meteor.call('tasks.insert', taskName, taskDescription, function (error, result) {
       if (error) {
         alert("Erro");
-      } 
+      }
       // TODO result não retorna nada
     });
 
     setTaskName('');
+    setTaskDescription('');
+    handleClose()
     setLoading(false);
 
   };
@@ -83,11 +85,11 @@ export default function AddTask() {
               variant="standard"
               fullWidth
               id="taskName"
+              autoComplete="off"
               error={taskError}
               value={taskName}
               label="Nome da tarefa"
               name="taskName"
-              autoComplete="taskName"
               autoFocus
               onChange={(e) => {
                 setTaskName(e.target.value);
@@ -97,12 +99,14 @@ export default function AddTask() {
               margin="normal"
               variant="standard"
               fullWidth
+              autoComplete="off"
               id="taskDescription"
+              multiline
+              rows={4}
               error={taskError}
               value={taskDescription}
               label="Descrição da tarefa"
               name="taskDescription"
-              autoComplete="taskDescription"
               onChange={(e) => {
                 setTaskDescription(e.target.value);
               }}
@@ -119,7 +123,7 @@ export default function AddTask() {
             </Button> */}
 
             <LoadingButton
-              disabled={taskName !== ""? false : true}
+              disabled={taskName !== "" ? false : true}
               type="submit"
               color="secondary"
               fullWidth
