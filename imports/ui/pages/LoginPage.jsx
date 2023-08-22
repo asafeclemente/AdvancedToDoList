@@ -57,7 +57,7 @@ export default function LoginPage() {
     // Lógica de autenticação e cadastro
     e.preventDefault();
     if (isSignup) {
-      Accounts.createUser({ username, password }, error => {
+      Accounts.createUser({ username, password, profile }, error => {
         if (error) {
           setUserError(true);
           if (error.reason === "Username already exists.") {
