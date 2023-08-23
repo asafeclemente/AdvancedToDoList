@@ -5,43 +5,81 @@ import { styled } from '@mui/material/styles';
 import { Typography } from '@material-ui/core';
 import { useNavigate } from 'react-router-dom';
 import SendIcon from '@mui/icons-material/Send';
+import { useTracker } from 'meteor/react-meteor-data';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { Avatar, Box, Button, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { useUserId } from 'meteor/react-meteor-accounts';
+import { Avatar, Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+
+const defaulFields = {
+	name: "",
+	email: "",
+	sexo: "Masculino",
+	data: null,
+	empresa: ""
+}
 
 export default function User() {
 
 	const navigate = useNavigate();
-	const isLoading = false
+	const fileInputRef = React.useRef(null);
 
 	const [isEditing, setIsEditing] = React.useState(false);
-	// const [editedUser, setEditedUser] = React.useState({ ...task });
-	const [editedUser, setEditedUser] = React.useState({sexo: "Masculino"});
+	const [editedUser, setEditedUser] = React.useState(defaulFields);
+	const userId = useUserId();
 
+	const { userData, isLoading } = useTracker(() => {
+		const noDataAvailable = { userData: [] };
+		if (!Meteor.user()) {
+			return noDataAvailable;
+		}
+		const handler = Meteor.subscribe('userData');
+
+		if (!handler.ready()) {
+			return { ...noDataAvailable, isLoading: true };
+		}
+		const userData = Meteor.users.findOne({ _id: Meteor.userId() });
+		delete userData.profile.profileImage
+
+		return { userData, isLoading: false };
+	});
+	console.log(userData)
+
+	React.useEffect(() => {
+		if (!editedUser.hasOwnProperty('profile')) {
+			const updatedObj = { ...editedUser, ...userData.profile };
+			setEditedUser({ ...updatedObj });
+		}
+	}, [userData?.username]);
 
 	const onCancel = () => {
 	};
 
 	const handleEditClick = () => {
-		// setEditedUser(task);
+		setEditedUser({ ...defaulFields, ...userData.profile });
 		setIsEditing(true);
 	};
 
 	const handleCancelClick = () => {
-		// setEditedUser(task);
+		setEditedUser({ ...defaulFields, ...userData.profile });
 		setIsEditing(false);
 		onCancel();
 	};
 
 	const handleSaveClick = () => {
-		// const updatedObj = { ...task, ...editedUser };
-		onSave(updatedObj);
+		onSave();
 		setIsEditing(false);
 	};
 
-	const onSave = (updatedObj) => {
-		Meteor.call('tasks.update', taskId, updatedObj['name'], updatedObj['description'], updatedObj['status']
-		);
+	const onSave = () => {
+		// On the client
+		Meteor.call('users.updateProfile', userId, editedUser, (error, result) => {
+			if (error) {
+				console.error('Update failed:', error.reason);
+			} else {
+				console.log('Update successful');
+			}
+		});
 	};
 
 	const handleInputChange = (field, value) => {
@@ -67,20 +105,29 @@ export default function User() {
 		});
 	};
 
-
 	const handleFileChange = async (event) => {
 		const file = event.target.files[0];
 		const base64 = await convertBase64(file);
-		setSelectedFile({ file: file, base64: base64 });
+		setSelectedFile({ name: file.name, base64: base64 });
+	};
+
+	const onSaveProfileImage = () => {
+		// On the client
+		Meteor.call('users.updateProfileImage', userId, selectedFile, (error, result) => {
+			if (error) {
+				console.error('Update failed:', error.reason);
+			} else {
+				console.log('Update successful');
+				fileInputRef.current.value = null;
+				setSelectedFile(null)
+			}
+		});
 	};
 
 	const handleUpload = () => {
-		// Aqui você pode adicionar a lógica para enviar o arquivo para o servidor
-		// Por exemplo, usando uma biblioteca de requisições HTTP como Axios.
 		if (selectedFile) {
-			// Substitua esta parte com a lógica de envio real
-			console.log(selectedFile)
 			console.log(`Enviando arquivo: ${selectedFile}`);
+			onSaveProfileImage()
 		}
 	};
 
@@ -88,9 +135,10 @@ export default function User() {
 		setSelectedFile(null)
 	}
 
-	const fileInputRef = React.useRef(null);
 	const handleButtonClick = () => {
-		// Aciona o evento de clique do input file quando o botão é clicado
+		// Reset the input value to null (to accept the same file again)
+		fileInputRef.current.value = null;
+		// Trigger input file click event when button is clicked
 		fileInputRef.current.click();
 	};
 
@@ -117,7 +165,7 @@ export default function User() {
 						<Grid item xs={12}>
 							<TextField
 								fullWidth
-								id="taskName" label="Usuário" name="taskName"
+								id="name" label="Nome" name="name"
 								autoComplete="off"
 								disabled={!isEditing}
 								value={editedUser.name}
@@ -138,18 +186,19 @@ export default function User() {
 							<DatePicker
 								fullWidth
 								disabled={!isEditing}
-								// margin="normal"
 								label="Data de nascimento"
-								value={editedUser.createdAt}
+								value={editedUser.data}
+								onChange={(value) => handleInputChange('data', value)}
 							/>
 						</Grid>
 						<Grid item sm={6} xs={12}>
 							<FormControl fullWidth>
-								<InputLabel id="demo-simple-select-label">Age</InputLabel>
+								<InputLabel id="demo-simple-select-label">Sexo</InputLabel>
 								<Select
 									labelId="demo-simple-select-label"
 									id="demo-simple-select"
 									value={editedUser.sexo}
+									disabled={!isEditing}
 									label="Sexo"
 									onChange={(e) => handleInputChange('sexo', e.target.value)}
 								>
@@ -158,14 +207,13 @@ export default function User() {
 								</Select>
 							</FormControl>
 						</Grid>
-
 						<Grid item xs={12}>
 							<TextField
 								fullWidth
 								id="empresa" label="Empresa" name="empresa"
 								autoComplete="off"
 								disabled={!isEditing}
-								value={editedUser.name}
+								value={editedUser.empresa}
 								onChange={(e) => handleInputChange('empresa', e.target.value)}
 							/>
 						</Grid>

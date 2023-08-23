@@ -1,8 +1,9 @@
 import React from 'react';
-import { Typography } from '@mui/material';
+import { Avatar, Typography } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 import PeopleIcon from '@mui/icons-material/People';
+import { useTracker } from 'meteor/react-meteor-data';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
@@ -45,6 +46,22 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 
 	const navigate = useNavigate();
 
+	const { userProfileImage, isLoading } = useTracker(() => {
+		const noDataAvailable = { userProfileImage: {} };
+		if (!Meteor.user()) {
+			return noDataAvailable;
+		}
+		const handler = Meteor.subscribe('userProfileImage');
+
+		if (!handler.ready()) {
+			return { ...noDataAvailable, isLoading: true };
+		}
+		const userProfile= Meteor.users.findOne({ _id: Meteor.userId() });
+		const userProfileImage = userProfile.profile.profileImage
+
+		return { userProfileImage, isLoading: false };
+	});
+
 	return (
 		<>
 			<Drawerr variant="permanent" open={open}>
@@ -70,7 +87,8 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 						</ListSubheader>
 						<ListItemButton>
 							<ListItemIcon>
-								<AssignmentIcon />
+								<Avatar alt={username} src={userProfileImage.base64} />
+
 							</ListItemIcon>
 							<ListItemText primary={username} />
 						</ListItemButton>
