@@ -2,17 +2,21 @@ import * as React from 'react';
 import { format } from 'date-fns';
 import Box from '@mui/material/Box';
 import AddTask from './components/AddTask';
+import LongMenu from './components/LongMenu';
+import { useNavigate } from 'react-router-dom';
+import PublicIcon from '@mui/icons-material/Public';
 import { useTracker } from 'meteor/react-meteor-data';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import { TasksCollection } from '/imports/db/TasksCollection';
 import { Divider, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
-import LongMenu from './components/LongMenu';
 
 const tabValues = { 0: "Cadastrada", 1: "Em andamento", 2: "Concluida" }
 
 
 export default function TasksList() {
   const user = useTracker(() => Meteor.user());
+  const navigate = useNavigate()
 
   const [hoveredIndex, setHoveredIndex] = React.useState(null); // New state to track hovered item
   const hideCompletedFilter = { isChecked: { $ne: true } };
@@ -59,7 +63,7 @@ export default function TasksList() {
                 key={index}
                 onMouseEnter={() => handleItemHover(index)}
                 onMouseLeave={handleItemLeave}
-                onClick={() => handleItemHover(index)} // Enable on mobile click
+                onClick={() => { task.userId === user._id && navigate('/tasks/' + task._id) }}
                 sx={{
                   '&:hover': {
                     backgroundColor: '#f0f0f0',
@@ -67,14 +71,17 @@ export default function TasksList() {
                 }}
               >
                 <ListItemIcon>
-                  <TaskAltIcon />
+                  {task.privateTask ? <AssignmentIcon /> : <PublicIcon />}
                 </ListItemIcon>
                 <ListItemText
                   primary={task.name + " | " + tabValues[task.status]}
-                  secondary={`Criado por: ${task.username}  (${format(
-                    task.createdAt,
-                    'HH:mm - dd/MM/yyyy'
-                  )})`}
+                  secondary={
+                    (task.userId !== user._id ?
+                      `Criado por: ${task.username} (${format(task.createdAt, 'HH:mm - dd/MM/yyyy')})`
+                      :
+                      `(${format(task.createdAt, 'HH:mm - dd/MM/yyyy')})`
+                    )
+                  }
                 />
                 {/* Renderize o componente LongMenu condicionalmente */}
                 {task.userId === user._id && hoveredIndex === index && <LongMenu task={task} />}

@@ -51,7 +51,6 @@ export default function TaskDetails() {
 
 	const onCancel = () => {
 	};
-	console.log(task)
 
 	const handleEditClick = () => {
 		setEditedTask(task);

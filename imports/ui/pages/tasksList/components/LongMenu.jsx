@@ -19,17 +19,20 @@ export default function LongMenu({task}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
+    event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
 
   const deleteTask = ({ _id }) => Meteor.call('tasks.remove', _id);
 
-  const handleClose = () => {
+  const handleClose = (event) => {
     setAnchorEl(null);
+    event.stopPropagation();
   };
 
   const handleOption = (option) => {
     if (option === "Editar"){
+      console.log("uaaai")
       navigate('/tasks/' + task._id);
     }
 

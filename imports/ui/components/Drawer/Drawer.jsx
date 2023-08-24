@@ -1,7 +1,8 @@
 import React from 'react';
-import { Avatar, Typography } from '@mui/material';
 import MuiDrawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
+import ListIcon from '@mui/icons-material/List';
+import { Avatar, Typography } from '@mui/material';
 import PeopleIcon from '@mui/icons-material/People';
 import { useTracker } from 'meteor/react-meteor-data';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -9,6 +10,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItemButton from '@mui/material/ListItemButton';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import { useHistory, useLocation } from 'react-router-dom';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Divider, IconButton, List, Toolbar } from '@mui/material';
@@ -45,6 +47,7 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 	const username = useUser()?.username;
 
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const { userProfileImage, isLoading } = useTracker(() => {
 		const noDataAvailable = { userProfileImage: {} };
@@ -79,13 +82,13 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 				</Toolbar>
 				<Divider />
 				<List component="nav">
-						<Typography id="drawer-user-email" variant="caption" ml={2}>
+						{/* <Typography id="drawer-user-email" variant="caption" ml={2}>
 							asafecgm1@gmail.comaaasdfghjk
-						</Typography>
+						</Typography> */}
 						<ListSubheader component="div" inset>
 
 						</ListSubheader>
-						<ListItemButton>
+						<ListItemButton onClick={() =>  location.pathname !== '/perfil' && navigate('/perfil')}>
 							<ListItemIcon>
 								<Avatar alt={username} src={userProfileImage.base64} />
 
@@ -93,17 +96,17 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 							<ListItemText primary={username} />
 						</ListItemButton>
 					<Divider sx={{ my: 1 }} />
-						<ListItemButton>
+						<ListItemButton onClick={() => location.pathname !== '/home' && navigate('/home')}>
 							<ListItemIcon>
 								<DashboardIcon />
 							</ListItemIcon>
 							<ListItemText primary="Home" />
 						</ListItemButton>
-						<ListItemButton onClick={() => navigate('/perfil')}>
+						<ListItemButton onClick={() => location.pathname !== '/tasks' && navigate('/tasks')}>
 							<ListItemIcon>
-								<PeopleIcon />
+								<ListIcon/>
 							</ListItemIcon>
-							<ListItemText primary="Perfil" />
+							<ListItemText primary="Tarefas" />
 						</ListItemButton>
 				</List>
 			</Drawerr>

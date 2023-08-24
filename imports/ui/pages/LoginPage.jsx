@@ -1,21 +1,22 @@
-import { Meteor } from 'meteor/meteor';
-import React, { useRef, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { useNavigate } from 'react-router-dom';
+import { Meteor } from 'meteor/meteor';
 import { Snackbar } from '@mui/material';
-// import { LoginWithGithub } from './LoginWithGithub';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import MuiAlert from '@mui/material/Alert';
+import Checkbox from '@mui/material/Checkbox';
+import React, { useRef, useState } from 'react';
+import TextField from '@mui/material/TextField';
+import Container from '@mui/material/Container';
+import Typography from '@mui/material/Typography';
+import CssBaseline from '@mui/material/CssBaseline';
+// import { LoginWithGithub } from './LoginWithGithub';
+import { useUserId } from 'meteor/react-meteor-accounts';
+import { Navigate, useNavigate } from 'react-router-dom';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -34,6 +35,11 @@ export default function LoginPage() {
   const [isSignup, setIsSignup] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+
+  const userId = useUserId();
+  if (userId) {
+    return <Navigate to="/home" />;
+  }
 
   // const submit = e => {
   //   e.preventDefault();
