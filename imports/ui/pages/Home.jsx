@@ -76,7 +76,7 @@ export default function Home() {
               Tarefas concluídas:
             </Typography>
             <Typography variant="h4" component="div">
-              {totalTasksRegistered}
+              {totalCompletedTasks}
             </Typography>
           </CardContent>
         </Card>
