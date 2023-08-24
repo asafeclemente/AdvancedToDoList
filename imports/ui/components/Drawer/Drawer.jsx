@@ -60,7 +60,7 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 			return { ...noDataAvailable, isLoading: true };
 		}
 		const userProfile= Meteor.users.findOne({ _id: Meteor.userId() });
-		const userProfileImage = userProfile.profile.profileImage
+		const userProfileImage = userProfile.profile?.profileImage || ""
 
 		return { userProfileImage, isLoading: false };
 	});

@@ -5,11 +5,9 @@ import {
 Meteor.methods({
 	'users.updateProfile'(userId, newProfile) {
 
-    console.log("1")
 		if (!this.userId) {
       throw new Meteor.Error('Not authorized.');
     }
-    console.log(newProfile)
 
 		camposPermitidos = ['name', 'email', 'data', 'sexo', 'empresa']
 
@@ -18,14 +16,12 @@ Meteor.methods({
         throw new Meteor.Error('Not authorized, contains a disallowed field.');
 			}
 		}
-    console.log("3")
 
     // Make sure the current user owns the profile being updated
     const user = Meteor.users.findOne(userId);
     if (!user || this.userId !== userId) {
       throw new Meteor.Error('Not authorized.');
     }
-    console.log("4")
 
     // Getting the user's 'profile' object
     const userProfile = user.profile || {};

@@ -39,11 +39,10 @@ export default function User() {
 			return { ...noDataAvailable, isLoading: true };
 		}
 		const userData = Meteor.users.findOne({ _id: Meteor.userId() });
-		delete userData.profile.profileImage
+		delete userData.profile?.profileImage
 
 		return { userData, isLoading: false };
 	});
-	console.log(userData)
 
 	React.useEffect(() => {
 		if (!editedUser.hasOwnProperty('profile')) {
@@ -126,7 +125,6 @@ export default function User() {
 
 	const handleUpload = () => {
 		if (selectedFile) {
-			console.log(`Enviando arquivo: ${selectedFile}`);
 			onSaveProfileImage()
 		}
 	};

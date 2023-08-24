@@ -38,7 +38,7 @@ export default function Home() {
         >
           <CardContent>
             <Typography variant="h6" component="div">
-              Tarefas Cadastradas:
+              Cadastradas:
             </Typography>
             <Typography variant="h4" component="div">
               {totalTasksRegistered}
@@ -55,7 +55,7 @@ export default function Home() {
         >
           <CardContent>
             <Typography variant="h6" component="div">
-              Tarefas em andamento:
+              Em andamento:
             </Typography>
             <Typography variant="h4" component="div">
               {totalTasksInProgress}
@@ -73,7 +73,7 @@ export default function Home() {
         >
           <CardContent>
             <Typography variant="h6" component="div">
-              Tarefas concluídas:
+              Concluídas:
             </Typography>
             <Typography variant="h4" component="div">
               {totalCompletedTasks}
@@ -84,12 +84,13 @@ export default function Home() {
       <Grid item xs={12}>
         <Card
           onClick={() => navigate('/tasks')}
-          onCu
           sx={{
-            p: 2, display: 'flex',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', 
-            cursor: 'pointer', 
-            transition: 'box-shadow 0.3s ease-in-out', 
+            p: 2,
+            display: 'flex',
+            alignItems: 'center',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            cursor: 'pointer',
+            transition: 'box-shadow 0.3s ease-in-out',
             '&:hover': {
               boxShadow: '0 6px 8px rgba(0, 0, 0, 0.2)',
             },

@@ -32,7 +32,6 @@ export default function LongMenu({task}) {
 
   const handleOption = (option) => {
     if (option === "Editar"){
-      console.log("uaaai")
       navigate('/tasks/' + task._id);
     }
 
