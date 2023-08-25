@@ -9,11 +9,12 @@ import MenuIcon from '@mui/icons-material/Menu';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import green from '@material-ui/core/colors/green';
+import LogoutIcon from '@mui/icons-material/Logout';
 import purple from '@material-ui/core/colors/purple';
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { Container, CssBaseline, Tooltip } from '@mui/material';
 import { useUser, useUserId } from 'meteor/react-meteor-accounts';
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
+import ConfirmationModal from './ConfirmationModal';
 
 import Drawer from './Drawer/Drawer';
 
@@ -63,9 +64,22 @@ export function Layout({ loggedOnly = true, children }) {
   const userId = useUserId();
   const username = useUser()?.username;
 
+  const [openLogoutModal, setOpenLogoutModal] = React.useState(false);
+
+  const handleCloseLogoutModal = () => {
+    setOpenLogoutModal(false)
+  }
+
   const [open, setOpen] = React.useState(true);
-  const toggleDrawer = () => {
-    setOpen(!open);
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event &&
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+    setOpen(open);
   };
 
   const theme = createTheme({
@@ -97,7 +111,7 @@ export function Layout({ loggedOnly = true, children }) {
               edge="start"
               color="inherit"
               aria-label="open drawer"
-              onClick={toggleDrawer}
+              onClick={toggleDrawer(true)}
               sx={{
                 marginRight: '36px',
                 ...(open && { display: 'none' }),
@@ -116,11 +130,20 @@ export function Layout({ loggedOnly = true, children }) {
             </Typography>
             <Tooltip title="Deslogar">
               <IconButton color="inherit"
-                onClick={() => logout()}
+                onClick={() => setOpenLogoutModal(true)}
               >
-                <ExitToAppIcon />
+                <LogoutIcon />
               </IconButton>
             </Tooltip>
+
+            <ConfirmationModal
+              open={openLogoutModal}
+              handleClose={() => {
+                setOpenLogoutModal(false)
+              }}
+              handleSubmit={() => logout()}
+            ></ConfirmationModal>
+
           </Toolbar>
         </AppBar>
         <Drawer open={open} drawerWidth={drawerWidth} toggleDrawer={toggleDrawer} />

@@ -1,4 +1,7 @@
-import React from 'react';
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import Button from '@mui/material/Button';
 import MuiDrawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 import ListIcon from '@mui/icons-material/List';
@@ -17,32 +20,10 @@ import { Divider, IconButton, List, Toolbar } from '@mui/material';
 import { useUser, useUserId } from 'meteor/react-meteor-accounts';
 import { useNavigate } from 'react-router-dom';
 
+const iOS =
+	typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+
 export default function Drawer({ open, drawerWidth, toggleDrawer }) {
-	const Drawerr = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-		({ theme, open }) => ({
-			'& .MuiDrawer-paper': {
-				position: 'relative',
-				whiteSpace: 'nowrap',
-				width: drawerWidth,
-				transition: theme.transitions.create('width', {
-					easing: theme.transitions.easing.sharp,
-					duration: theme.transitions.duration.enteringScreen,
-				}),
-				boxSizing: 'border-box',
-				...(!open && {
-					overflowX: 'hidden',
-					transition: theme.transitions.create('width', {
-						easing: theme.transitions.easing.sharp,
-						duration: theme.transitions.duration.leavingScreen,
-					}),
-					width: theme.spacing(7),
-					[theme.breakpoints.up('sm')]: {
-						width: theme.spacing(9),
-					},
-				}),
-			},
-		}),
-	);
 
 	const username = useUser()?.username;
 
@@ -59,7 +40,7 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 		if (!handler.ready()) {
 			return { ...noDataAvailable, isLoading: true };
 		}
-		const userProfile= Meteor.users.findOne({ _id: Meteor.userId() });
+		const userProfile = Meteor.users.findOne({ _id: Meteor.userId() });
 		const userProfileImage = userProfile.profile?.profileImage || ""
 
 		return { userProfileImage, isLoading: false };
@@ -67,35 +48,48 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 
 	return (
 		<>
-			<Drawerr variant="permanent" open={open}>
-				<Toolbar
-					sx={{
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'flex-end',
-						px: [1],
-					}}
+			<SwipeableDrawer
+				disableBackdropTransition={!iOS}
+				disableDiscovery={iOS}
+				anchor={'left'}
+				open={open}
+				onClose={toggleDrawer(false)}
+				onOpen={toggleDrawer(true)}
+			>
+				<Box
+					sx={{ width: drawerWidth }}
+					role="presentation"
+					onClick={toggleDrawer(false)}
+					onKeyDown={toggleDrawer(false)}
 				>
-					<IconButton onClick={toggleDrawer}>
-						<ChevronLeftIcon />
-					</IconButton>
-				</Toolbar>
-				<Divider />
-				<List component="nav">
+					<Toolbar
+						sx={{
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'flex-end',
+							px: [1],
+						}}
+					>
+						<IconButton onClick={toggleDrawer}>
+							<ChevronLeftIcon />
+						</IconButton>
+					</Toolbar>
+					<Divider />
+					<List component="nav">
 						{/* <Typography id="drawer-user-email" variant="caption" ml={2}>
 							asafecgm1@gmail.comaaasdfghjk
 						</Typography> */}
 						<ListSubheader component="div" inset>
 
 						</ListSubheader>
-						<ListItemButton onClick={() =>  location.pathname !== '/perfil' && navigate('/perfil')}>
+						<ListItemButton onClick={() => location.pathname !== '/perfil' && navigate('/perfil')}>
 							<ListItemIcon>
 								<Avatar alt={username} src={userProfileImage.base64} />
 
 							</ListItemIcon>
 							<ListItemText primary={username} />
 						</ListItemButton>
-					<Divider sx={{ my: 1 }} />
+						<Divider sx={{ my: 1 }} />
 						<ListItemButton onClick={() => location.pathname !== '/home' && navigate('/home')}>
 							<ListItemIcon>
 								<DashboardIcon />
@@ -104,12 +98,13 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 						</ListItemButton>
 						<ListItemButton onClick={() => location.pathname !== '/tasks' && navigate('/tasks')}>
 							<ListItemIcon>
-								<ListIcon/>
+								<ListIcon />
 							</ListItemIcon>
 							<ListItemText primary="Tarefas" />
 						</ListItemButton>
-				</List>
-			</Drawerr>
+					</List>
+				</Box>
+			</SwipeableDrawer>
 		</>
-	)
+	);
 }
