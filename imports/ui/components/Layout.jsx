@@ -66,10 +66,6 @@ export function Layout({ loggedOnly = true, children }) {
 
   const [openLogoutModal, setOpenLogoutModal] = React.useState(false);
 
-  const handleCloseLogoutModal = () => {
-    setOpenLogoutModal(false)
-  }
-
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = (open) => (event) => {
     if (

@@ -7,9 +7,14 @@ import { useNavigate } from 'react-router-dom';
 import PublicIcon from '@mui/icons-material/Public';
 import { useTracker } from 'meteor/react-meteor-data';
 import TaskAltIcon from '@mui/icons-material/TaskAlt';
+
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { TasksCollection } from '/imports/db/TasksCollection';
-import { Divider, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Divider, IconButton, List, ListItem, ListItemIcon, ListItemText, Tooltip } from '@mui/material';
 
 const tabValues = { 0: "Cadastrada", 1: "Em andamento", 2: "Concluida" }
 
@@ -74,7 +79,7 @@ export default function TasksList() {
                   {task.privateTask ? <AssignmentIcon /> : <PublicIcon />}
                 </ListItemIcon>
                 <ListItemText
-                  primary={task.name + " | " + tabValues[task.status]}
+                  primary={task.name}
                   secondary={
                     (task.userId !== user._id ?
                       `Criado por: ${task.username} (${format(task.createdAt, 'HH:mm - dd/MM/yyyy')})`
@@ -84,7 +89,14 @@ export default function TasksList() {
                   }
                 />
                 {/* Renderize o componente LongMenu condicionalmente */}
-                {task.userId === user._id && hoveredIndex === index && <LongMenu task={task} />}
+                <Tooltip title={tabValues[task.status]}>
+                <Box sx={{display: 'flex', mr:2}}>
+                    <CheckBoxOutlineBlankIcon color={ task.status=== 0 ? "success" : "disabled"} />
+                    <IndeterminateCheckBoxIcon color={ task.status=== 1 ? "success" : "disabled"} />
+                    <CheckBoxIcon color={ task.status=== 2 ? "success" : "disabled"} />
+                </Box>
+                </Tooltip>
+                {<LongMenu see={task.userId === user._id && hoveredIndex === index} task={task} />}
               </ListItem>
               {index !== tasks.length - 1 && <Divider />}
             </React.Fragment>

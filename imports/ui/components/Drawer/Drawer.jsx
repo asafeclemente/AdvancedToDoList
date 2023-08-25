@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import Button from '@mui/material/Button';
 import MuiDrawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 import ListIcon from '@mui/icons-material/List';
@@ -13,12 +12,10 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import ListItemButton from '@mui/material/ListItemButton';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import { useHistory, useLocation } from 'react-router-dom';
-import AssignmentIcon from '@mui/icons-material/Assignment';
+import { useNavigate, useLocation } from 'react-router-dom';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import { Divider, IconButton, List, Toolbar } from '@mui/material';
-import { useUser, useUserId } from 'meteor/react-meteor-accounts';
-import { useNavigate } from 'react-router-dom';
+import { useUser } from 'meteor/react-meteor-accounts';
 
 const iOS =
 	typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -76,9 +73,6 @@ export default function Drawer({ open, drawerWidth, toggleDrawer }) {
 					</Toolbar>
 					<Divider />
 					<List component="nav">
-						{/* <Typography id="drawer-user-email" variant="caption" ml={2}>
-							asafecgm1@gmail.comaaasdfghjk
-						</Typography> */}
 						<ListSubheader component="div" inset>
 
 						</ListSubheader>

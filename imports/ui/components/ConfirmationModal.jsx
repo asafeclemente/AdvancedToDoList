@@ -8,10 +8,13 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 500,
+  width: '50vw',
+  maxWidth: 400,
+  minWidth: 280,
   bgcolor: 'background.paper',
   boxShadow: 24,
   p: 4,
+  borderRadius: 4
 };
 
 export default function ConfirmationModal({ open, handleClose, handleSubmit }) {
@@ -31,24 +34,27 @@ export default function ConfirmationModal({ open, handleClose, handleSubmit }) {
             Tem certeza?
           </Typography>
         </Box>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <Button 
-          variant="contained"
-          fullWidth
-            onClick={handleClose}>Cancelar</Button>
-          <LoadingButton
-            type="submit"
-            color="secondary"
-            fullWidth
-            sx={{ mt: 1, mb: 0 }}
-            // onClick={handleClick}
-            loading={loading}
-            loadingPosition="start"
-            startIcon={<LogoutIcon />}
-            variant="contained"
-          >
-            <span>Sim</span>
-          </LoadingButton>
+        <Box component="form" onSubmit={handleSubmit} noValidate >
+          <Box sx={{
+            mt: 3,
+            display: 'flex',
+            gap: 2
+          }}>
+            <Button
+              fullWidth
+              onClick={handleClose}>Cancelar</Button>
+            <LoadingButton
+              type="submit"
+              color="secondary"
+              fullWidth
+              // onClick={handleClick}
+              loading={loading}
+              variant="contained"
+            >
+              <span>Sim</span>
+            </LoadingButton>
+          </Box>
+
         </Box>
       </Box>
     </Modal>
