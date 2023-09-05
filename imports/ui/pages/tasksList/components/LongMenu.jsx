@@ -5,6 +5,8 @@ import IconButton from '@mui/material/IconButton';
 import { useTracker } from 'meteor/react-meteor-data';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useNavigate } from 'react-router-dom';
+import { Opacity } from '@mui/icons-material';
+import ConfirmationModal from '../../../components/ConfirmationModal';
 
 const options = [
   'Editar',
@@ -13,11 +15,14 @@ const options = [
 
 const ITEM_HEIGHT = 48;
 
-export default function LongMenu({task}) {
+export default function LongMenu({ see, task }) {
   const navigate = useNavigate();
+
+  const [openDeleteTaskModal, setOpenDeleteTaskModal] = React.useState(false);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  
   const handleClick = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
@@ -30,20 +35,22 @@ export default function LongMenu({task}) {
     event.stopPropagation();
   };
 
-  const handleOption = (option) => {
-    if (option === "Editar"){
+  const handleOption = (event, option) => {
+    event.stopPropagation();
+    setAnchorEl(null);
+    if (option === "Editar") {
       navigate('/tasks/' + task._id);
     }
 
-    else if (option === "Remover"){
-      deleteTask(task)
+    else if (option === "Remover") {
+      setOpenDeleteTaskModal(true)
     }
-    setAnchorEl(null);
   };
 
   return (
     <>
       <IconButton
+        sx={see ? null : { opacity: 0, pointerEvents: 'none' }}
         aria-label="more"
         id="long-button"
         aria-controls={open ? 'long-menu' : undefined}
@@ -69,11 +76,23 @@ export default function LongMenu({task}) {
         }}
       >
         {options.map((option) => (
-          <MenuItem key={option} onClick={() => handleOption(option)}>
+          <MenuItem key={option} onClick={(event) => handleOption(event, option)}>
             {option}
           </MenuItem>
         ))}
       </Menu>
+      <ConfirmationModal
+        open={openDeleteTaskModal}
+        handleClose={(event) => {
+          event.stopPropagation();
+          setOpenDeleteTaskModal(false)
+        }}
+        handleConfirm={(event) =>{
+          event.stopPropagation();
+          deleteTask(task)
+          setOpenDeleteTaskModal(false)
+        }}
+      ></ConfirmationModal >
     </>
   );
 }

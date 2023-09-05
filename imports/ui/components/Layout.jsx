@@ -122,7 +122,7 @@ export function Layout({ loggedOnly = true, children }) {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              AdvancedTodoList
+              TodoList
             </Typography>
             <Tooltip title="Deslogar">
               <IconButton color="inherit"
@@ -137,7 +137,7 @@ export function Layout({ loggedOnly = true, children }) {
               handleClose={() => {
                 setOpenLogoutModal(false)
               }}
-              handleSubmit={() => logout()}
+              handleConfirm={() => logout()}
             ></ConfirmationModal>
 
           </Toolbar>

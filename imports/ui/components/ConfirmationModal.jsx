@@ -17,7 +17,7 @@ const style = {
   borderRadius: 4
 };
 
-export default function ConfirmationModal({ open, handleClose, handleSubmit }) {
+export default function ConfirmationModal({ open, handleClose, handleConfirm }) {
 
   const [loading, setLoading] = React.useState(false);
 
@@ -27,6 +27,7 @@ export default function ConfirmationModal({ open, handleClose, handleSubmit }) {
       onClose={handleClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
+      onClick={(event) => {event.stopPropagation()}}
     >
       <Box sx={style}>
         <Box >
@@ -34,7 +35,7 @@ export default function ConfirmationModal({ open, handleClose, handleSubmit }) {
             Tem certeza?
           </Typography>
         </Box>
-        <Box component="form" onSubmit={handleSubmit} noValidate >
+        <Box  >
           <Box sx={{
             mt: 3,
             display: 'flex',
@@ -47,14 +48,13 @@ export default function ConfirmationModal({ open, handleClose, handleSubmit }) {
               type="submit"
               color="secondary"
               fullWidth
-              // onClick={handleClick}
+              onClick={handleConfirm}
               loading={loading}
               variant="contained"
             >
               <span>Sim</span>
             </LoadingButton>
           </Box>
-
         </Box>
       </Box>
     </Modal>

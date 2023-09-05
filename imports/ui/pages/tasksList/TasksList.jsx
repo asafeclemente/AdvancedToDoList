@@ -69,6 +69,7 @@ export default function TasksList() {
                 onMouseEnter={() => handleItemHover(index)}
                 onMouseLeave={handleItemLeave}
                 onClick={() => { task.userId === user._id && navigate('/tasks/' + task._id) }}
+                // onClick={(event)=> {event.stopPropagation(); console.log("a")}}
                 sx={{
                   '&:hover': {
                     backgroundColor: '#f0f0f0',
