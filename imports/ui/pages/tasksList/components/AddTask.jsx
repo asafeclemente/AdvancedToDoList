@@ -66,7 +66,7 @@ export default function AddTask() {
   };
 
   return (
-    <div>
+    <>
       <Fab sx={fabStyle} onClick={handleOpen} aria-label={"Adicionar tarefa"} color={'primary'}>
         <AddIcon />
       </Fab>
@@ -138,6 +138,6 @@ export default function AddTask() {
           </Box>
         </Box>
       </Modal>
-    </div>
+    </>
   );
 }
